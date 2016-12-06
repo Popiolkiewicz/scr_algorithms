@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+<?import javafx.scene.layout.BorderPane?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.chart.Chart?>
+<?import javafx.scene.control.Tab?>
+
+<TabPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="pl.scr.project.controller.MainWindowController" >
+	<tabs>
+		<Tab closable="false" text="Procesowanie">
+			<content>
+				<fx:include source="views\\ProcessingPane.fxml" />
+			</content>
+		</Tab>
+		<Tab closable="false" text="Analiza">
+			<content>
+				<fx:include source="views\\AnalysisPane.fxml" />
+			</content>
+		</Tab>
+	</tabs>
+</TabPane>
