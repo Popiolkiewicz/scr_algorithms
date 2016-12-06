@@ -1,7 +1,6 @@
 package pl.scr.project.controller;
 
 import java.net.URL;
-import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -12,29 +11,35 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import pl.scr.project.constants.AlgorithmTypeEnum;
 import pl.scr.project.constants.Constants;
 import pl.scr.project.model.Process;
 import pl.scr.project.utils.CustomChart;
 import pl.scr.project.utils.EditCell;
+import pl.scr.project.utils.ProcessRandomizer;
 
 public class ProcessingPaneController implements Initializable {
 
 	@FXML
 	private TableView<Process> processesTableView;
+
 	@FXML
-	private AnchorPane chartPane;
+	private VBox chartBox;
 
 	private ObservableList<Process> dataSource = FXCollections.observableArrayList();
+
+	@FXML
+	private void handleRandomButtonAction(ActionEvent event) {
+		dataSource.clear();
+		dataSource.addAll(ProcessRandomizer.generateRandomData());
+		processesTableView.refresh();
+	}
 
 	@FXML
 	private void handleAddProcessButtonAction(ActionEvent event) {
@@ -45,13 +50,10 @@ public class ProcessingPaneController implements Initializable {
 	@FXML
 	public void handleDeleteProcessButtonAction(ActionEvent event) {
 		int selectedIndex = processesTableView.getSelectionModel().getSelectedIndex();
-		if (selectedIndex >= 0)
+		if (selectedIndex >= 0) {
 			processesTableView.getItems().remove(selectedIndex);
-	}
-
-	@FXML
-	private void handleRandomButtonAction(ActionEvent event) {
-		System.out.println("handleRandomButtonAction");
+			processesTableView.refresh();
+		}
 	}
 
 	@FXML
@@ -64,32 +66,15 @@ public class ProcessingPaneController implements Initializable {
 
 	@FXML
 	public void handleCalculateButtonAction(ActionEvent event) {
-		dataSource.stream().sorted((e1, e2) -> Integer.compare(e1.getPriority(), e2.getPriority())).forEach(process -> {
-			System.out.println(process.toString());
-			createChart(process);
-		});
+		chartBox.getChildren().clear();
+		dataSource.stream().sorted((e1, e2) -> Integer.compare(e1.getPriority(), e2.getPriority()))
+				.forEach(process -> createChart(process));
 	}
-
-	public int counter = 0;
 
 	private void createChart(Process process) {
 		CustomChart customChart = CustomChart.create();
-		XYChart.Series<Number, Number> series = new XYChart.Series<>();
-		series.getData().add(new XYChart.Data<>(0, 0));
-		series.getData().add(new XYChart.Data<>(0, 1));
-		series.getData().add(new XYChart.Data<>(1, 1));
-		series.getData().add(new XYChart.Data<>(1, 0));
-		series.getData().add(new XYChart.Data<>(2, 0));
-		series.getData().add(new XYChart.Data<>(3, 0));
-		series.getData().add(new XYChart.Data<>(4, 0));
-		series.getData().add(new XYChart.Data<>(4, 1));
-		series.getData().add(new XYChart.Data<>(6, 1));
-		series.getData().add(new XYChart.Data<>(6, 0));
-		series.getData().add(new XYChart.Data<>(new Random().nextInt(10), 0));
-		customChart.getData().retainAll();
-		customChart.getData().add(counter, series);
-		chartPane.getChildren().add(customChart);
-		counter++;
+		chartBox.getChildren().add(customChart);
+		customChart.createData();
 	}
 
 	/*

@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import pl.scr.project.constants.Constants;
 
 public class Program extends Application {
 
@@ -18,7 +19,7 @@ public class Program extends Application {
 			TabPane root = (TabPane) FXMLLoader.load(getClass().getResource("views\\MainWindow.fxml"));
 			Scene scene = new Scene(root, 600, 600);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setTitle("SCR Project");
+			primaryStage.setTitle(Constants.MAIN_WINDOW_TITLE);
 			primaryStage.setMaximized(true);
 			primaryStage.setScene(scene);
 			primaryStage.show();

@@ -11,67 +11,72 @@
 <?import javafx.scene.control.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.layout.GridPane?>
-
 <?language javascript?>
 <?import javafx.scene.control.cell.TreeItemPropertyValueFactory?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
 
-<SplitPane dividerPositions="0.5" minHeight="600.0" minWidth="800.0"
+<SplitPane dividerPositions="0.9" minHeight="600.0" minWidth="800.0"
 	orientation="VERTICAL" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="pl.scr.project.controller.ProcessingPaneController">
 	<items>
-		<ScrollPane >
-			<AnchorPane fx:id="chartPane" minHeight="0.0" minWidth="0.0">
-			</AnchorPane>
+		<ScrollPane>
+			<VBox fx:id="chartBox">
+				<padding>
+					<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+				</padding>
+			</VBox>
 		</ScrollPane>
-		<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="179.0"
-			prefWidth="598.0">
+		<HBox prefHeight="296.0" prefWidth="158.0" spacing="5.0">
 			<children>
-				<ComboBox fx:id="selectAlgorithmComboBox" prefWidth="150.0"
-					promptText="Wybierz algorytm..." AnchorPane.leftAnchor="0.0"
-					AnchorPane.topAnchor="0.0" />
+				<VBox spacing="5.0" HBox.hgrow="NEVER">
+					<children>
+						<ComboBox fx:id="selectAlgorithmComboBox" prefWidth="200.0"
+							promptText="Wybierz algorytm" />
+						<Button alignment="CENTER" mnemonicParsing="false"
+							onAction="#handleCalculateButtonAction" prefWidth="200.0" text="Wylicz" />
+						<Button alignment="CENTER" mnemonicParsing="false"
+							onAction="#handleDeleteProcessButtonAction" prefWidth="200.0"
+							text="Usuń proces" />
+						<Button alignment="CENTER" mnemonicParsing="false"
+							onAction="#handleAddProcessButtonAction" prefWidth="200.0" text="Dodaj proces" />
+						<Button alignment="CENTER" mnemonicParsing="false"
+							onAction="#handleRandomButtonAction" prefWidth="200.0" text="Losuj" />
+					</children>
+					<padding>
+						<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+					</padding>
+				</VBox>
 				<TableView fx:id="processesTableView" editable="true"
-					AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-					AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0"
-					onKeyPressed="#handleTableViewKeyPressed">
-					<fx:script>
+					onKeyPressed="#handleTableViewKeyPressed" AnchorPane.bottomAnchor="0.0"
+					AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+					AnchorPane.topAnchor="40.0" HBox.hgrow="ALWAYS">
+					<!-- <fx:script>
 						processesTableView.getSelectionModel().setCellSelectionEnabled(true);
-					</fx:script>
+					</fx:script> -->
 					<items>
 					</items>
 					<columns>
-						<TableColumn fx:id="indexColumn" text="#" editable="false"
-							maxWidth="30" minWidth="30" sortable="false">
+						<TableColumn fx:id="indexColumn" editable="false"
+							maxWidth="30" minWidth="30" sortable="false" text="#">
 						</TableColumn>
-						<TableColumn fx:id="arrivalTimeColumn" text="Czas nadejścia"
-							editable="true" />
-						<TableColumn fx:id="processingTimeColumn" text="Czas przetwarzania"
-							editable="true" />
-						<TableColumn fx:id="periodColumn" text="Okres"
-							editable="true" />
-						<TableColumn fx:id="deadlineColumn" text="Termin"
-							editable="true" />
-						<TableColumn fx:id="priorityColumn" text="Priorytet"
-							editable="true" />
+						<TableColumn fx:id="arrivalTimeColumn" editable="true"
+							text="Czas nadejścia" />
+						<TableColumn fx:id="processingTimeColumn" editable="true"
+							text="Czas przetwarzania" />
+						<TableColumn fx:id="periodColumn" editable="true"
+							text="Okres" />
+						<TableColumn fx:id="deadlineColumn" editable="true"
+							text="Termin" />
+						<TableColumn fx:id="priorityColumn" editable="true"
+							text="Priorytet" />
 					</columns>
 					<columnResizePolicy>
 						<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
 					</columnResizePolicy>
 				</TableView>
-				<Button mnemonicParsing="false" onAction="#handleCalculateButtonAction"
-					text="Wylicz" AnchorPane.rightAnchor="360.0" AnchorPane.topAnchor="0.0" />
-				<Button mnemonicParsing="false" onAction="#handleDeleteProcessButtonAction"
-					text="Usuń proces" AnchorPane.rightAnchor="200.0"
-					AnchorPane.topAnchor="0.0" />
-				<Button mnemonicParsing="false" onAction="#handleAddProcessButtonAction"
-					text="Dodaj proces" AnchorPane.rightAnchor="60.0"
-					AnchorPane.topAnchor="0.0" />
-				<Button mnemonicParsing="false" onAction="#handleRandomButtonAction"
-					text="Losuj" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
 			</children>
-			<padding>
-				<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-			</padding>
-		</AnchorPane>
+		</HBox>
 	</items>
 </SplitPane>
