@@ -1,8 +1,11 @@
 package pl.scr.project.controller;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.StringProperty;
@@ -19,10 +22,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import pl.scr.project.constants.AlgorithmTypeEnum;
 import pl.scr.project.constants.Constants;
+import pl.scr.project.logic.PTCalculator;
+import pl.scr.project.logic.ProcessRandomizer;
+import pl.scr.project.model.ChartDisplayData;
+import pl.scr.project.model.ChartElement;
 import pl.scr.project.model.Process;
-import pl.scr.project.utils.CustomChart;
-import pl.scr.project.utils.EditCell;
-import pl.scr.project.utils.ProcessRandomizer;
+import pl.scr.project.ui.CustomChart;
+import pl.scr.project.ui.EditCell;
 
 public class ProcessingPaneController implements Initializable {
 
@@ -66,15 +72,20 @@ public class ProcessingPaneController implements Initializable {
 
 	@FXML
 	public void handleCalculateButtonAction(ActionEvent event) {
-		chartBox.getChildren().clear();
-		dataSource.stream().sorted((e1, e2) -> Integer.compare(e1.getPriority(), e2.getPriority()))
-				.forEach(process -> createChart(process));
+		PTCalculator ptc = new PTCalculator(dataSource);
+		System.out.println(dataSource);
+//		ChartDisplayData cdd = ptc.calculate();
+//		System.out.println(cdd);
+//		chartBox.getChildren().clear();
+//		for (Entry<Integer, List<ChartElement>> entry : cdd.getSeries().entrySet()) 
+//			createChart(entry.getValue(), cdd.getHiperperiod());
+		
 	}
 
-	private void createChart(Process process) {
-		CustomChart customChart = CustomChart.create();
+	private void createChart(List<ChartElement> list, int hiperperiod) {
+		CustomChart customChart = new CustomChart(hiperperiod);
 		chartBox.getChildren().add(customChart);
-		customChart.createData();
+		customChart.createData(list);
 	}
 
 	/*

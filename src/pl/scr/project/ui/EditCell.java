@@ -1,4 +1,4 @@
-package pl.scr.project.utils;
+package pl.scr.project.ui;
 
 import java.util.function.Function;
 

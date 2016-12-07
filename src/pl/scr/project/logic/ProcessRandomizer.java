@@ -1,4 +1,4 @@
-package pl.scr.project.utils;
+package pl.scr.project.logic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +15,10 @@ public class ProcessRandomizer {
 		int processesCount = random.nextInt(Constants.MAX_PROCESS_COUNT);
 		for (int i = 0; i <= processesCount; i++) {
 			Process process = new Process();
-			process.setArrivalTime(random.nextInt(5));
-			process.setPeriod(random.nextInt(10));
-			process.setProcessingTime(random.nextInt(process.getPeriod() + 1));
-			process.setDeadline(random.nextInt(process.getPeriod() + 1));
+			process.setArrivalTime(random.nextInt(100));
+			process.setPeriod(random.nextInt(25) + 1);
+			process.setDeadline(random.nextInt(process.getPeriod()) + 1);
+			process.setProcessingTime(random.nextInt(process.getDeadline() + 1));
 			process.setPriority(random.nextInt(100));
 			result.add(process);
 		}

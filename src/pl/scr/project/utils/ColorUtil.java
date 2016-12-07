@@ -11,4 +11,5 @@ public class ColorUtil {
 		int blue = randomRGB.nextInt(200) + 55;
 		return String.format("%d, %d, %d", red, green, blue);
 	}
+
 }

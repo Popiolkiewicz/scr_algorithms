@@ -1,7 +1,11 @@
 package pl.scr.project.model;
 
+import java.util.Comparator;
+import java.util.Random;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import pl.scr.project.constants.ProcessState;
 
 public class Process {
 
@@ -12,6 +16,7 @@ public class Process {
 	private StringProperty prioritySP = new SimpleStringProperty("0");
 
 	public Process() {
+
 	}
 
 	public Process(int arrivalTime, int processingTime, int period, int deadline, int priority) {
@@ -88,4 +93,22 @@ public class Process {
 				+ periodSP + ", deadlineSP=" + deadlineSP + ", prioritySP=" + prioritySP + "]";
 	}
 
+	private ProcessState state = ProcessState.NOT_ARRIVED;
+	private Integer ID = new Random().nextInt(20);
+	
+	public ProcessState getState() {
+		return state;
+	}
+
+	public void setState(ProcessState state) {
+		this.state = state;
+	}
+
+	
+	public Integer getID() {
+		return ID;
+	}
+
+	public static final Comparator<Process> STATE_COMPARATOR = (o1, o2) -> Integer.compare(o1.getPriority(),
+			o2.getPriority());
 }

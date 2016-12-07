@@ -1,5 +1,6 @@
 .chart {
     -fx-padding: 1px;
+    -fx-arc-height: 50px;
 }
 .chart-content {
     -fx-padding: 0px;
