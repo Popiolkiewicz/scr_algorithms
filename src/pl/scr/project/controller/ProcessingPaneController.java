@@ -74,11 +74,11 @@ public class ProcessingPaneController implements Initializable {
 	public void handleCalculateButtonAction(ActionEvent event) {
 		PTCalculator ptc = new PTCalculator(dataSource);
 		System.out.println(dataSource);
-//		ChartDisplayData cdd = ptc.calculate();
-//		System.out.println(cdd);
-//		chartBox.getChildren().clear();
-//		for (Entry<Integer, List<ChartElement>> entry : cdd.getSeries().entrySet()) 
-//			createChart(entry.getValue(), cdd.getHiperperiod());
+		ChartDisplayData cdd = ptc.fakeCalculate();
+		System.out.println(cdd);
+		chartBox.getChildren().clear();
+		for (Entry<Integer, List<ChartElement>> entry : cdd.getSeries().entrySet()) 
+			createChart(entry.getValue(), cdd.getHiperperiod());
 		
 	}
 

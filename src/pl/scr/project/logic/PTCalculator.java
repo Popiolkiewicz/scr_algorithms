@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import pl.scr.project.constants.ProcessState;
+import pl.scr.project.model.ChartDisplayData;
+import pl.scr.project.model.ChartElement;
 import pl.scr.project.model.Process;
 
 public class PTCalculator {
@@ -90,18 +92,22 @@ public class PTCalculator {
 		return hiperperiod;
 	}
 
-	// ChartDisplayData cds = new ChartDisplayData(dataSource.size(),
-	// hiperperiod);
+	public ChartDisplayData fakeCalculate() {
 
-	// for (int j = 0; j < dataSource.size(); j++) {
-	// Process process = dataSource.get(j);
-	// List<ChartElement> chartElements = new ArrayList<>();
-	// for (int i = 0; i < hiperperiod; i += process.getPeriod()) {
-	// ChartElement chartElement = new ChartElement();
-	// chartElement.setStart(i);
-	// chartElement.setEnd(i + process.getProcessingTime());
-	// chartElements.add(chartElement);
-	// }
-	// cds.getSeries().put(j, chartElements);
-	// }
+		ChartDisplayData cds = new ChartDisplayData(dataSource.size(), hiperperiod);
+
+		for (int j = 0; j < dataSource.size(); j++) {
+			Process process = dataSource.get(j);
+			List<ChartElement> chartElements = new ArrayList<>();
+			for (int i = 0; i < hiperperiod; i += process.getPeriod()) {
+				ChartElement chartElement = new ChartElement();
+				chartElement.setStart(i);
+				chartElement.setEnd(i + process.getProcessingTime());
+				chartElements.add(chartElement);
+			}
+			cds.getSeries().put(j, chartElements);
+		}
+		
+		return cds;
+	}
 }

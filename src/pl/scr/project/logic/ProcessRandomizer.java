@@ -16,9 +16,9 @@ public class ProcessRandomizer {
 		for (int i = 0; i <= processesCount; i++) {
 			Process process = new Process();
 			process.setArrivalTime(random.nextInt(100));
-			process.setPeriod(random.nextInt(25) + 1);
+			process.setPeriod(random.nextInt(10) + 1);
 			process.setDeadline(random.nextInt(process.getPeriod()) + 1);
-			process.setProcessingTime(random.nextInt(process.getDeadline() + 1));
+			process.setProcessingTime(random.nextInt(process.getDeadline()) + 1);
 			process.setPriority(random.nextInt(100));
 			result.add(process);
 		}
