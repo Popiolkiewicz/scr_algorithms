@@ -1,32 +1,35 @@
 package pl.scr.project.controller;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventDispatchChain;
+import javafx.event.EventDispatcher;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import pl.scr.project.constants.AlgorithmTypeEnum;
 import pl.scr.project.constants.Constants;
 import pl.scr.project.logic.PTCalculator;
 import pl.scr.project.logic.ProcessRandomizer;
-import pl.scr.project.model.ChartDisplayData;
-import pl.scr.project.model.ChartElement;
 import pl.scr.project.model.Process;
+import pl.scr.project.ui.CustomAlert;
 import pl.scr.project.ui.CustomChart;
 import pl.scr.project.ui.EditCell;
 
@@ -72,20 +75,26 @@ public class ProcessingPaneController implements Initializable {
 
 	@FXML
 	public void handleCalculateButtonAction(ActionEvent event) {
+		validateData();
+		dataSource.forEach(process -> process.clearUnitsToProcess());
 		PTCalculator ptc = new PTCalculator(dataSource);
-		System.out.println(dataSource);
-		ChartDisplayData cdd = ptc.fakeCalculate();
-		System.out.println(cdd);
 		chartBox.getChildren().clear();
-		for (Entry<Integer, List<ChartElement>> entry : cdd.getSeries().entrySet()) 
-			createChart(entry.getValue(), cdd.getHiperperiod());
-		
+		Map<Integer, Map<Integer, Boolean>> calculationResult = ptc.calculate();
+		calculationResult.entrySet().stream().forEach(processEntry -> {
+			CustomChart customChart = new CustomChart(ptc.getHiperperiod());
+			chartBox.getChildren().add(customChart);
+			System.out.println("Creating chart for process entry: " + processEntry);
+			customChart.createData(processEntry);
+		});
 	}
 
-	private void createChart(List<ChartElement> list, int hiperperiod) {
-		CustomChart customChart = new CustomChart(hiperperiod);
-		chartBox.getChildren().add(customChart);
-		customChart.createData(list);
+	private boolean validateData() {
+		String algorithmSelection = selectAlgorithmComboBox.getValue();
+		if (algorithmSelection == null) {
+			new CustomAlert("Nie wybrano algorytmu!").show();
+			return false;
+		}
+		return true;
 	}
 
 	/*

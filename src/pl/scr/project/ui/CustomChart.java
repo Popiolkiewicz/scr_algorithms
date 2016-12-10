@@ -1,6 +1,8 @@
 package pl.scr.project.ui;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javafx.scene.Node;
 import javafx.scene.chart.AreaChart;
@@ -54,25 +56,36 @@ public class CustomChart extends AreaChart<Number, Number> {
 		yAxis.setMinorTickVisible(false);
 	}
 
-	public void createData(List<ChartElement> chartElements) {
-		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
-		for (ChartElement chartElement : chartElements) {
-			series.getData().add(new XYChart.Data<>(chartElement.getStart(), 0));
-			series.getData().add(new XYChart.Data<>(chartElement.getStart(), 1));
-			series.getData().add(new XYChart.Data<>(chartElement.getEnd(), 1));
-			series.getData().add(new XYChart.Data<>(chartElement.getEnd(), 0));
-		}
-		// for (int i = 0; i < hiperperiod; i += new Random().nextInt(20)) {
-		// series.getData().add(new XYChart.Data<>(i, 0));
-		// series.getData().add(new XYChart.Data<>(i, 1));
-		// series.getData().add(new XYChart.Data<>(++i, 1));
-		// series.getData().add(new XYChart.Data<>(i, 0));
-		// }
-		getData().add(series);
+	private void changeChartStyle(AreaChart.Series<Number, Number> series) {
 		Node fill = series.getNode().lookup(".chart-series-area-fill");
 		Node line = series.getNode().lookup(".chart-series-area-line");
 		String randomColor = ColorUtil.getRandomColor();
 		fill.setStyle("-fx-fill: rgba(" + randomColor + ", 0.40);");
 		line.setStyle("-fx-stroke: rgba(" + randomColor + ", 1.0);");
+	}
+	
+	private XYChart.Series<Number, Number> createPeriodChart() {
+		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
+		for (int i = 0; i < hiperperiod; i += hiperperiod * 0.1) {
+			series.getData().add(new XYChart.Data<>(i, -0.2));
+			series.getData().add(new XYChart.Data<>(i, 1.5));
+			series.getData().add(new XYChart.Data<>(i, -0.2));
+		}
+		return series;
+	}
+
+	public void createData(Entry<Integer, Map<Integer, Boolean>> processEntry) {
+		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
+		for (Entry<Integer, Boolean> entry : processEntry.getValue().entrySet()) {
+			double heightUnit = entry.getValue() ? 1.0 : 0.2;
+			Integer timeUnit = entry.getKey();
+			series.getData().add(new XYChart.Data<>(timeUnit, -0.2));
+			series.getData().add(new XYChart.Data<>(timeUnit, heightUnit));
+			series.getData().add(new XYChart.Data<>(timeUnit + 1, heightUnit));
+			series.getData().add(new XYChart.Data<>(timeUnit + 1, -0.2));
+		}
+		// getData().add(createPeriodChart());
+		getData().add(series);
+		changeChartStyle(series);
 	}
 }

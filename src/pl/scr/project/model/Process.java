@@ -5,27 +5,48 @@ import java.util.Random;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import pl.scr.project.constants.ProcessState;
 
 public class Process {
+
+	public static final Comparator<Process> PRIORITY_COMPARATOR = (o1, o2) -> Integer.compare(o2.getPriority(),
+			o1.getPriority());
+
+	private int id;
+	private int unitsToProcess;
+
+	public Process() {
+		this.id = new Random().nextInt(100000);
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public int getUnitsToProcess() {
+		return unitsToProcess;
+	}
+
+	public void incUnitsToProcess() {
+		this.unitsToProcess += getProcessingTime();
+	}
+
+	public void clearUnitsToProcess() {
+		this.unitsToProcess = 0;
+	}
+
+	public void decUnitsToProcess() {
+		this.unitsToProcess -= 1;
+	}
+
+	public boolean isDone() {
+		return unitsToProcess == 0;
+	}
 
 	private StringProperty arrivalTimeSP = new SimpleStringProperty("0");
 	private StringProperty processingTimeSP = new SimpleStringProperty("0");
 	private StringProperty periodSP = new SimpleStringProperty("0");
 	private StringProperty deadlineSP = new SimpleStringProperty("0");
 	private StringProperty prioritySP = new SimpleStringProperty("0");
-
-	public Process() {
-
-	}
-
-	public Process(int arrivalTime, int processingTime, int period, int deadline, int priority) {
-		setArrivalTime(arrivalTime);
-		setProcessingTime(processingTime);
-		setPeriod(period);
-		setDeadline(deadline);
-		setPriority(priority);
-	}
 
 	public final StringProperty arrivalTimeProperty() {
 		return this.arrivalTimeSP;
@@ -90,25 +111,7 @@ public class Process {
 	@Override
 	public String toString() {
 		return "Process [arrivalTimeSP=" + arrivalTimeSP + ", processingTimeSP=" + processingTimeSP + ", periodSP="
-				+ periodSP + ", deadlineSP=" + deadlineSP + ", prioritySP=" + prioritySP + "]";
+				+ periodSP + ", deadlineSP=" + deadlineSP + ", prioritySP=" + prioritySP + ", id=" + id + "]";
 	}
 
-	private ProcessState state = ProcessState.NOT_ARRIVED;
-	private Integer ID = new Random().nextInt(20);
-	
-	public ProcessState getState() {
-		return state;
-	}
-
-	public void setState(ProcessState state) {
-		this.state = state;
-	}
-
-	
-	public Integer getID() {
-		return ID;
-	}
-
-	public static final Comparator<Process> STATE_COMPARATOR = (o1, o2) -> Integer.compare(o1.getPriority(),
-			o2.getPriority());
 }

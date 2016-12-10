@@ -1,80 +1,39 @@
 package pl.scr.project.logic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import pl.scr.project.constants.ProcessState;
-import pl.scr.project.model.ChartDisplayData;
-import pl.scr.project.model.ChartElement;
 import pl.scr.project.model.Process;
 
 public class PTCalculator {
 
 	private List<Process> dataSource;
-	private int hiperperiod;
+	private Map<Integer, Map<Integer, Boolean>> resultMap;
 
-	private int hiperperiodUnit;
-	private List<Process> awaiting = new ArrayList<>();
-	private Process processing;
-	private List<Integer> processIdByHiperperiodUnit;
+	private Integer hiperperiod;
+	private int currentTimeUnit;
 
 	public PTCalculator(List<Process> dataSource) {
 		this.dataSource = dataSource;
-		this.dataSource.sort((o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
-		this.hiperperiod = calculateHiperperiod();
+		createRMTemplate();
+		calculateHiperperiod();
 	}
 
-	public void calculate() {
-		for (this.hiperperiodUnit = 0; hiperperiodUnit < hiperperiod; hiperperiodUnit++) {
-			checkStartState();
-			markProcessing();
-			updateDisplayData();
-		}
+	private void createRMTemplate() {
+		resultMap = new LinkedHashMap<>();
+		for (Process p : dataSource)
+			resultMap.put(p.getId(), new HashMap<>());
 	}
 
-	private void checkStartState() {
-		this.awaiting.clear();
-		for (Process process : dataSource) {
-			switch (process.getState()) {
-			case NOT_ARRIVED:
-				if (process.getArrivalTime() == hiperperiodUnit)
-					process.setState(ProcessState.AWAITING);
-			case AWAITING:
-				awaiting.add(process);
-				break;
-			case PAUSED:
-				break;
-			case PROCESSED:
-				break;
-			case PROCESSING:
-				break;
-			default:
-				throw new IllegalStateException();
-			}
-		}
-	}
-
-	private void markProcessing() {
-		awaiting.sort(Process.STATE_COMPARATOR);
-		if (processing == null)
-			processing = awaiting.get(0);
-		else {
-			Process hpProcess = awaiting.get(0);
-			if (hpProcess.getPriority() > processing.getPriority())
-				processing = hpProcess;
-		}
-	}
-
-	private void updateDisplayData() {
-		processIdByHiperperiodUnit.add(hiperperiodUnit, processing.getID());
-	}
-
-	public int calculateHiperperiod() {
+	public void calculateHiperperiod() {
 		List<Integer> collect = dataSource.stream().map(process -> process.getPeriod()).collect(Collectors.toList());
 		Integer[] periodArray = collect.toArray(new Integer[collect.size()]);
-		int hiperperiod = 0;
+		hiperperiod = 0;
 		boolean found;
 		for (int i = 1;; i++) {
 			found = true;
@@ -89,25 +48,54 @@ public class PTCalculator {
 				break;
 			}
 		}
+	}
+
+	public int getHiperperiod() {
+		if (hiperperiod == null)
+			throw new IllegalStateException("Hiperokres nie wyliczony");
 		return hiperperiod;
 	}
 
-	public ChartDisplayData fakeCalculate() {
+	public Map<Integer, Map<Integer, Boolean>> calculate() {
+		List<Process> awaiting = new ArrayList<>();
+		List<Process> paused = new ArrayList<>();
+		Process currentProcess = null;
+		for (currentTimeUnit = 0; currentTimeUnit < hiperperiod; currentTimeUnit++) {
+			awaiting.clear();
 
-		ChartDisplayData cds = new ChartDisplayData(dataSource.size(), hiperperiod);
+			dataSource.forEach(process -> {
+				if (checkIfAddNewUnits(process))
+					process.incUnitsToProcess();
+				if (!process.isDone())
+					awaiting.add(process);
+			});
 
-		for (int j = 0; j < dataSource.size(); j++) {
-			Process process = dataSource.get(j);
-			List<ChartElement> chartElements = new ArrayList<>();
-			for (int i = 0; i < hiperperiod; i += process.getPeriod()) {
-				ChartElement chartElement = new ChartElement();
-				chartElement.setStart(i);
-				chartElement.setEnd(i + process.getProcessingTime());
-				chartElements.add(chartElement);
+			if (awaiting.isEmpty()) {
+				currentProcess = null;
+				continue;
 			}
-			cds.getSeries().put(j, chartElements);
+
+			awaiting.sort(Process.PRIORITY_COMPARATOR);
+
+			Process incomingProcess = awaiting.get(0);
+			if (currentProcess != null && !Objects.equals(currentProcess.getId(), incomingProcess.getId())) {
+				if (!currentProcess.isDone())
+					paused.add(currentProcess);
+				paused.remove(incomingProcess);
+			}
+			paused.forEach(process -> resultMap.get(process.getId()).put(currentTimeUnit, false));
+
+			currentProcess = incomingProcess;
+			currentProcess.decUnitsToProcess();
+			resultMap.get(currentProcess.getId()).put(currentTimeUnit, true);
 		}
-		
-		return cds;
+		return resultMap;
 	}
+
+	private boolean checkIfAddNewUnits(Process process) {
+		if (process.getArrivalTime().equals(currentTimeUnit))
+			return true;
+		return currentTimeUnit % process.getPeriod() == 0;
+	}
+
 }
