@@ -1,33 +1,28 @@
 package pl.scr.project.logic;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import pl.scr.project.model.Cache;
 import pl.scr.project.model.Process;
 
 public class PTCalculator {
 
 	private List<Process> dataSource;
-	private Map<Integer, Map<Integer, Boolean>> resultMap;
-
 	private Integer hiperperiod;
 	private int currentTimeUnit;
 
 	public PTCalculator(List<Process> dataSource) {
 		this.dataSource = dataSource;
-		createRMTemplate();
+		this.dataSource.forEach(process -> {
+			process.clearUnitsToProcess();
+			process.clearDisplatData();
+		});
 		calculateHiperperiod();
-	}
-
-	private void createRMTemplate() {
-		resultMap = new LinkedHashMap<>();
-		for (Process p : dataSource)
-			resultMap.put(p.getId(), new HashMap<>());
 	}
 
 	public void calculateHiperperiod() {
@@ -56,16 +51,25 @@ public class PTCalculator {
 		return hiperperiod;
 	}
 
-	public Map<Integer, Map<Integer, Boolean>> calculate() {
+	public void calculate() {
 		List<Process> awaiting = new ArrayList<>();
-		List<Process> paused = new ArrayList<>();
+		Set<Process> paused = new HashSet<>();
+		Set<Process> startedNewPeriod = new HashSet<>();
 		Process currentProcess = null;
-		for (currentTimeUnit = 0; currentTimeUnit < hiperperiod; currentTimeUnit++) {
-			awaiting.clear();
 
+		for (currentTimeUnit = 0; currentTimeUnit < hiperperiod; currentTimeUnit++) {
+			//Preparation
+			startedNewPeriod.clear();
+			awaiting.clear();
 			dataSource.forEach(process -> {
-				if (checkIfAddNewUnits(process))
+				if (checkIfInterrupt(process)) {
+					process.clearUnitsToProcess();
+					paused.remove(process);
+				}
+				if (checkIfAddNewUnits(process)) {
 					process.incUnitsToProcess();
+					startedNewPeriod.add(process);
+				}
 				if (!process.isDone())
 					awaiting.add(process);
 			});
@@ -74,22 +78,26 @@ public class PTCalculator {
 				currentProcess = null;
 				continue;
 			}
-
 			awaiting.sort(Process.PRIORITY_COMPARATOR);
 
+			//Determining new process
 			Process incomingProcess = awaiting.get(0);
 			if (currentProcess != null && !Objects.equals(currentProcess.getId(), incomingProcess.getId())) {
-				if (!currentProcess.isDone())
+				if (!currentProcess.isDone() && !startedNewPeriod.contains(currentProcess))
 					paused.add(currentProcess);
 				paused.remove(incomingProcess);
 			}
-			paused.forEach(process -> resultMap.get(process.getId()).put(currentTimeUnit, false));
+			paused.forEach(process -> process.getDisplayData().put(currentTimeUnit, false));
 
 			currentProcess = incomingProcess;
 			currentProcess.decUnitsToProcess();
-			resultMap.get(currentProcess.getId()).put(currentTimeUnit, true);
+			currentProcess.getDisplayData().put(currentTimeUnit, true);
 		}
-		return resultMap;
+	}
+
+	private boolean checkIfInterrupt(Process process) {
+		return Cache.get().getInterruptAfterDeadline()
+				&& currentTimeUnit % process.getPeriod() == process.getDeadline();
 	}
 
 	private boolean checkIfAddNewUnits(Process process) {

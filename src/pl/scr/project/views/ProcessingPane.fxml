@@ -16,6 +16,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
 
 <SplitPane dividerPositions="0.9" minHeight="600.0" minWidth="800.0"
 	orientation="VERTICAL" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
@@ -43,6 +44,7 @@
 							onAction="#handleAddProcessButtonAction" prefWidth="200.0" text="Dodaj proces" />
 						<Button alignment="CENTER" mnemonicParsing="false"
 							onAction="#handleRandomButtonAction" prefWidth="200.0" text="Losuj" />
+						<CheckBox fx:id="interruptCheckbox" alignment="CENTER" mnemonicParsing="false" prefWidth="200.0" text="Przerwij po terminie" />
 					</children>
 					<padding>
 						<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

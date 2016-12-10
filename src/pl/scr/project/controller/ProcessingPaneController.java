@@ -1,7 +1,6 @@
 package pl.scr.project.controller;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -10,24 +9,20 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventDispatchChain;
-import javafx.event.EventDispatcher;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import pl.scr.project.constants.AlgorithmTypeEnum;
 import pl.scr.project.constants.Constants;
 import pl.scr.project.logic.PTCalculator;
 import pl.scr.project.logic.ProcessRandomizer;
+import pl.scr.project.model.Cache;
 import pl.scr.project.model.Process;
 import pl.scr.project.ui.CustomAlert;
 import pl.scr.project.ui.CustomChart;
@@ -75,16 +70,16 @@ public class ProcessingPaneController implements Initializable {
 
 	@FXML
 	public void handleCalculateButtonAction(ActionEvent event) {
-		validateData();
-		dataSource.forEach(process -> process.clearUnitsToProcess());
-		PTCalculator ptc = new PTCalculator(dataSource);
+		if (!validateData())
+			return;
 		chartBox.getChildren().clear();
-		Map<Integer, Map<Integer, Boolean>> calculationResult = ptc.calculate();
-		calculationResult.entrySet().stream().forEach(processEntry -> {
+		PTCalculator ptc = new PTCalculator(dataSource);
+		ptc.calculate();
+		dataSource.forEach(process -> {
 			CustomChart customChart = new CustomChart(ptc.getHiperperiod());
 			chartBox.getChildren().add(customChart);
-			System.out.println("Creating chart for process entry: " + processEntry);
-			customChart.createData(processEntry);
+			System.out.println("Creating chart for process entry: " + process.getDisplayData());
+			customChart.createData(process);
 		});
 	}
 
@@ -114,6 +109,8 @@ public class ProcessingPaneController implements Initializable {
 	private TableColumn<Process, String> deadlineColumn;
 	@FXML
 	private TableColumn<Process, String> priorityColumn;
+	@FXML
+	private CheckBox interruptCheckbox;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -126,6 +123,7 @@ public class ProcessingPaneController implements Initializable {
 		initializeColumn(periodColumn, Process::periodProperty);
 		initializeColumn(deadlineColumn, Process::deadlineProperty);
 		initializeColumn(priorityColumn, Process::priorityProperty);
+		Cache.get().interruptAfterDeadline().bind(interruptCheckbox.selectedProperty());
 	}
 
 	private void initializeColumn(TableColumn<Process, String> column, Function<Process, StringProperty> property) {

@@ -1,6 +1,8 @@
 package pl.scr.project.model;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -13,9 +15,10 @@ public class Process {
 
 	private int id;
 	private int unitsToProcess;
+	private Map<Integer, Boolean> displayData = new LinkedHashMap<>();
 
 	public Process() {
-		this.id = new Random().nextInt(100000);
+		this.id = new Random().nextInt(Integer.MAX_VALUE);
 	}
 
 	public Integer getId() {
@@ -40,6 +43,18 @@ public class Process {
 
 	public boolean isDone() {
 		return unitsToProcess == 0;
+	}
+
+	public Map<Integer, Boolean> getDisplayData() {
+		return displayData;
+	}
+
+	public void clearDisplatData() {
+		displayData.clear();
+	}
+
+	public void setDisplayData(Map<Integer, Boolean> displayData) {
+		this.displayData = displayData;
 	}
 
 	private StringProperty arrivalTimeSP = new SimpleStringProperty("0");
@@ -112,6 +127,28 @@ public class Process {
 	public String toString() {
 		return "Process [arrivalTimeSP=" + arrivalTimeSP + ", processingTimeSP=" + processingTimeSP + ", periodSP="
 				+ periodSP + ", deadlineSP=" + deadlineSP + ", prioritySP=" + prioritySP + ", id=" + id + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Process other = (Process) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 
 }
