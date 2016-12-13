@@ -17,7 +17,7 @@ public class CustomChart extends AreaChart<Number, Number> {
 	private int hiperperiod;
 
 	public CustomChart(int hiperperiod) {
-		super(new NumberAxis(0, hiperperiod, 1), new NumberAxis(0, 1.5, 5));
+		super(new NumberAxis(0, hiperperiod, 5), new NumberAxis(0, 1.5, 5));
 		this.xAxis = (NumberAxis) getXAxis();
 		this.yAxis = (NumberAxis) getYAxis();
 		this.hiperperiod = hiperperiod;
@@ -42,9 +42,7 @@ public class CustomChart extends AreaChart<Number, Number> {
 	}
 
 	private void configureXAxis() {
-		xAxis.setMinorTickVisible(false);
 		xAxis.setAutoRanging(false);
-		xAxis.setMinorTickVisible(false);
 	}
 
 	private void configureYAxis() {
@@ -68,18 +66,44 @@ public class CustomChart extends AreaChart<Number, Number> {
 		getData().add(series);
 		changeChartStyle(series);
 
-		AreaChart.Series<Number, Number> periodSeries = createPeriodChart(process.getPeriod());
+		AreaChart.Series<Number, Number> periodSeries = createPeriodSeries(process.getPeriod());
 		getData().add(periodSeries);
 		changeChartStyle(periodSeries, "00,00,00");
 
-		AreaChart.Series<Number, Number> deadlineSeries = createDeadlineChart(process);
-		getData().add(deadlineSeries);
-		changeChartStyle(deadlineSeries, "58,191,71");
+		AreaChart.Series<Number, Number> deadlineOkSeries = createDeadlineOkSeries(process);
+		getData().add(deadlineOkSeries);
+		changeChartStyle(deadlineOkSeries, "58,191,71");
+
+		AreaChart.Series<Number, Number> deadlineExceededSeries = createDeadlineExceededSeries(process);
+		getData().add(deadlineExceededSeries);
+		changeChartStyle(deadlineExceededSeries, "255,0,0");
 	}
 
-	private AreaChart.Series<Number, Number> createDeadlineChart(Process process) {
+	private XYChart.Series<Number, Number> createPeriodSeries(Integer period) {
 		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
-		for (int i = process.getDeadline(); i < hiperperiod; i += process.getPeriod()) {
+		for (int i = 0; i <= hiperperiod; i += period) {
+			series.getData().add(new XYChart.Data<>(i, -0.2));
+			series.getData().add(new XYChart.Data<>(i, 1.5));
+			series.getData().add(new XYChart.Data<>(i + 0.01, 1.5));
+			series.getData().add(new XYChart.Data<>(i + 0.01, -0.2));
+		}
+		return series;
+	}
+
+	private AreaChart.Series<Number, Number> createDeadlineOkSeries(Process process) {
+		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
+		for (Integer i : process.getDeadlineOkTimeUnits()) {
+			series.getData().add(new XYChart.Data<>(i, -0.2));
+			series.getData().add(new XYChart.Data<>(i, 1.2));
+			series.getData().add(new XYChart.Data<>(i + 0.01, 1.2));
+			series.getData().add(new XYChart.Data<>(i + 0.01, -0.2));
+		}
+		return series;
+	}
+
+	private AreaChart.Series<Number, Number> createDeadlineExceededSeries(Process process) {
+		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
+		for (Integer i : process.getDeadlineExceededTimeUnits()) {
 			series.getData().add(new XYChart.Data<>(i, -0.2));
 			series.getData().add(new XYChart.Data<>(i, 1.2));
 			series.getData().add(new XYChart.Data<>(i + 0.01, 1.2));
@@ -97,16 +121,5 @@ public class CustomChart extends AreaChart<Number, Number> {
 		Node line = series.getNode().lookup(".chart-series-area-line");
 		fill.setStyle("-fx-fill: rgba(" + colorRGB + ", 0.40);");
 		line.setStyle("-fx-stroke: rgba(" + colorRGB + ", 1.0);");
-	}
-
-	private XYChart.Series<Number, Number> createPeriodChart(Integer period) {
-		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
-		for (int i = 0; i < hiperperiod; i += period) {
-			series.getData().add(new XYChart.Data<>(i, -0.2));
-			series.getData().add(new XYChart.Data<>(i, 1.5));
-			series.getData().add(new XYChart.Data<>(i + 0.01, 1.5));
-			series.getData().add(new XYChart.Data<>(i + 0.01, -0.2));
-		}
-		return series;
 	}
 }

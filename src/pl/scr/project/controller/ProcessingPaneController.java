@@ -18,10 +18,12 @@ import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
-import pl.scr.project.constants.AlgorithmTypeEnum;
 import pl.scr.project.constants.Constants;
+import pl.scr.project.logic.Calculator;
+import pl.scr.project.logic.EDFCalculator;
 import pl.scr.project.logic.PTCalculator;
 import pl.scr.project.logic.ProcessRandomizer;
+import pl.scr.project.logic.RMSCalculator;
 import pl.scr.project.model.Cache;
 import pl.scr.project.model.Process;
 import pl.scr.project.ui.CustomAlert;
@@ -73,14 +75,27 @@ public class ProcessingPaneController implements Initializable {
 		if (!validateData())
 			return;
 		chartBox.getChildren().clear();
-		PTCalculator ptc = new PTCalculator(dataSource);
-		ptc.calculate();
-		dataSource.forEach(process -> {
-			CustomChart customChart = new CustomChart(ptc.getHiperperiod());
-			chartBox.getChildren().add(customChart);
+		Calculator calc = null;
+		switch (selectAlgorithmComboBox.getValue()) {
+		case Constants.PT:
+			calc = new PTCalculator(dataSource);
+			break;
+		case Constants.RMS:
+			calc = new RMSCalculator(dataSource);
+			break;
+		case Constants.EDF:
+			calc = new EDFCalculator(dataSource);
+			break;
+		default:
+			break;
+		}
+		calc.calculate();
+		for (Process process : dataSource) {
 			System.out.println("Creating chart for process entry: " + process.getDisplayData());
+			CustomChart customChart = new CustomChart(calc.getHiperperiod());
+			chartBox.getChildren().add(customChart);
 			customChart.createData(process);
-		});
+		}
 	}
 
 	private boolean validateData() {
@@ -114,7 +129,7 @@ public class ProcessingPaneController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		selectAlgorithmComboBox.getItems().addAll(AlgorithmTypeEnum.getDescsAsList());
+		initializeComboBox();
 		processesTableView.setItems(dataSource);
 		indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(
 				processesTableView.getItems().indexOf(column.getValue()) + 1));
@@ -124,6 +139,12 @@ public class ProcessingPaneController implements Initializable {
 		initializeColumn(deadlineColumn, Process::deadlineProperty);
 		initializeColumn(priorityColumn, Process::priorityProperty);
 		Cache.get().interruptAfterDeadline().bind(interruptCheckbox.selectedProperty());
+	}
+
+	private void initializeComboBox() {
+		selectAlgorithmComboBox.getItems().add(Constants.PT);
+		selectAlgorithmComboBox.getItems().add(Constants.RMS);
+		selectAlgorithmComboBox.getItems().add(Constants.EDF);
 	}
 
 	private void initializeColumn(TableColumn<Process, String> column, Function<Process, StringProperty> property) {

@@ -1,7 +1,9 @@
 package pl.scr.project.model;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -12,10 +14,15 @@ public class Process {
 
 	public static final Comparator<Process> PRIORITY_COMPARATOR = (o1, o2) -> Integer.compare(o2.getPriority(),
 			o1.getPriority());
-
+	
+	public static final Comparator<Process> DEADLINE_COMPARATOR = (o1, o2) -> Integer.compare(o1.getDeadline(),
+			o2.getDeadline());
+	
 	private int id;
 	private int unitsToProcess;
 	private Map<Integer, Boolean> displayData = new LinkedHashMap<>();
+	private List<Integer> deadlineExceededTimeUnits = new ArrayList<>();
+	private List<Integer> deadlineOkTimeUnits = new ArrayList<>();
 
 	public Process() {
 		this.id = new Random().nextInt(Integer.MAX_VALUE);
@@ -41,12 +48,38 @@ public class Process {
 		this.unitsToProcess -= 1;
 	}
 
+	/**
+	 * @return true if all unit has been processed
+	 */
 	public boolean isDone() {
 		return unitsToProcess == 0;
 	}
 
+	/**
+	 * @return true if current has been processed
+	 */
+	public boolean isOneProcessed() {
+		return unitsToProcess % getProcessingTime() == 0;
+	}
+
 	public Map<Integer, Boolean> getDisplayData() {
 		return displayData;
+	}
+
+	public List<Integer> getDeadlineExceededTimeUnits() {
+		return deadlineExceededTimeUnits;
+	}
+
+	public void clearDeadlineExceededTimeUnits() {
+		this.deadlineExceededTimeUnits.clear();
+	}
+
+	public List<Integer> getDeadlineOkTimeUnits() {
+		return deadlineOkTimeUnits;
+	}
+
+	public void clearDeadlineOkTimeUnits() {
+		this.deadlineOkTimeUnits.clear();
 	}
 
 	public void clearDisplatData() {

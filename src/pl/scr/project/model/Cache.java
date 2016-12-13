@@ -13,9 +13,9 @@ public class Cache {
 	public static final Cache get() {
 		return cache != null ? cache : (cache = new Cache());
 	}
-	
+
 	private BooleanProperty interruptAfterDeadline = new SimpleBooleanProperty(false);
-	
+
 	public final BooleanProperty interruptAfterDeadline() {
 		return interruptAfterDeadline;
 	}
@@ -23,5 +23,5 @@ public class Cache {
 	public boolean getInterruptAfterDeadline() {
 		return interruptAfterDeadline.get();
 	}
-	
+
 }
