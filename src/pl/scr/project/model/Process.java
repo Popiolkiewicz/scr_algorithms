@@ -1,7 +1,6 @@
 package pl.scr.project.model;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +11,6 @@ import javafx.beans.property.StringProperty;
 
 public class Process {
 
-	public static final Comparator<Process> PRIORITY_COMPARATOR = (o1, o2) -> Integer.compare(o2.getPriority(),
-			o1.getPriority());
-	
-	public static final Comparator<Process> DEADLINE_COMPARATOR = (o1, o2) -> Integer.compare(o1.getDeadline(),
-			o2.getDeadline());
-	
 	private int id;
 	private int unitsToProcess;
 	private Map<Integer, Boolean> displayData = new LinkedHashMap<>();

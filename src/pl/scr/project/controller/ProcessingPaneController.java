@@ -91,7 +91,6 @@ public class ProcessingPaneController implements Initializable {
 		}
 		calc.calculate();
 		for (Process process : dataSource) {
-			System.out.println("Creating chart for process entry: " + process.getDisplayData());
 			CustomChart customChart = new CustomChart(calc.getHiperperiod());
 			chartBox.getChildren().add(customChart);
 			customChart.createData(process);

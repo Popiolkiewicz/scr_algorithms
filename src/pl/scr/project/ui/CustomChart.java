@@ -66,7 +66,7 @@ public class CustomChart extends AreaChart<Number, Number> {
 		getData().add(series);
 		changeChartStyle(series);
 
-		AreaChart.Series<Number, Number> periodSeries = createPeriodSeries(process.getPeriod());
+		AreaChart.Series<Number, Number> periodSeries = createPeriodSeries(process);
 		getData().add(periodSeries);
 		changeChartStyle(periodSeries, "00,00,00");
 
@@ -79,9 +79,9 @@ public class CustomChart extends AreaChart<Number, Number> {
 		changeChartStyle(deadlineExceededSeries, "255,0,0");
 	}
 
-	private XYChart.Series<Number, Number> createPeriodSeries(Integer period) {
+	private XYChart.Series<Number, Number> createPeriodSeries(Process process) {
 		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
-		for (int i = 0; i <= hiperperiod; i += period) {
+		for (int i = process.getArrivalTime(); i <= hiperperiod; i += process.getPeriod()) {
 			series.getData().add(new XYChart.Data<>(i, -0.2));
 			series.getData().add(new XYChart.Data<>(i, 1.5));
 			series.getData().add(new XYChart.Data<>(i + 0.01, 1.5));
