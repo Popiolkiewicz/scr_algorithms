@@ -17,24 +17,31 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Separator?>
 
 <SplitPane dividerPositions="0.9" minHeight="600.0" minWidth="800.0"
 	orientation="VERTICAL" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="pl.scr.project.controller.ProcessingPaneController">
 	<items>
 		<ScrollPane>
-			<VBox fx:id="chartBox">
+			<VBox alignment="CENTER" fx:id="chartBox">
 				<padding>
 					<Insets left="10.0" right="10.0" top="10.0" />
 				</padding>
 			</VBox>
 		</ScrollPane>
-		<HBox prefHeight="296.0" prefWidth="158.0" spacing="5.0">
+		<HBox maxHeight="150" prefHeight="200" prefWidth="158.0" spacing="5.0">
 			<children>
 				<VBox spacing="5.0" HBox.hgrow="NEVER">
 					<children>
 						<ComboBox fx:id="selectAlgorithmComboBox" prefWidth="200.0"
 							promptText="Wybierz algorytm" />
+						<Button alignment="CENTER" mnemonicParsing="false"
+							onAction="#handleSettingsButtonAction" prefWidth="200.0"
+							text="Zaawansowane ustawienia" />
+						<CheckBox fx:id="interruptCheckbox" alignment="CENTER"
+							mnemonicParsing="false" prefWidth="200.0" text="Przerwij po terminie" />
+						<Separator minHeight="20" visible="false" />
 						<Button alignment="CENTER" mnemonicParsing="false"
 							onAction="#handleCalculateButtonAction" prefWidth="200.0" text="Wylicz" />
 						<Button alignment="CENTER" mnemonicParsing="false"
@@ -44,7 +51,11 @@
 							onAction="#handleAddProcessButtonAction" prefWidth="200.0" text="Dodaj proces" />
 						<Button alignment="CENTER" mnemonicParsing="false"
 							onAction="#handleRandomButtonAction" prefWidth="200.0" text="Losuj" />
-						<CheckBox fx:id="interruptCheckbox" alignment="CENTER" mnemonicParsing="false" prefWidth="200.0" text="Przerwij po terminie" />
+						<Separator minHeight="20" visible="false" />
+						<Label fx:id="hiperperiodLabel" prefWidth="200.0"
+							text="Hiperokres: Nie wyliczono" />
+						<Label fx:id="processorUsageLabel" prefWidth="200.0"
+							text="Zużycie procesora: Nie wyliczono" />
 					</children>
 					<padding>
 						<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -56,7 +67,7 @@
 					AnchorPane.topAnchor="40.0" HBox.hgrow="ALWAYS">
 					<fx:script>
 						processesTableView.getSelectionModel().setCellSelectionEnabled(true);
-					</fx:script> 
+					</fx:script>
 					<items>
 					</items>
 					<columns>

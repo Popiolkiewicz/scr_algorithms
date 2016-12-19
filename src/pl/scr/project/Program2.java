@@ -4,8 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import pl.scr.project.ui.CustomChart2;
 
@@ -18,10 +17,11 @@ public class Program2 extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			ScrollPane scrollPane = new ScrollPane();
-			VBox vBox = new VBox();
-			scrollPane.setContent(vBox);
-			Scene scene = new Scene(scrollPane, 600, 600);
+			// ScrollPane scrollPane = new ScrollPane();
+			ListView<CustomChart2> listView = new ListView<>();
+			// VBox vBox = new VBox();
+			// listView.getItems().add(vBox);
+			Scene scene = new Scene(listView, 600, 600);
 			primaryStage.setMaximized(true);
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -51,7 +51,7 @@ public class Program2 extends Application {
 					series3.getData().add(new XYChart.Data<>(j + 0.01, -0.2));
 				}
 				customChart2.getData().add(series3);
-				vBox.getChildren().add(customChart2);
+				listView.getItems().add(customChart2);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

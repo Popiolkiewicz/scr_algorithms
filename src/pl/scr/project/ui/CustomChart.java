@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import pl.scr.project.model.Cache;
 import pl.scr.project.model.Process;
 import pl.scr.project.utils.ColorUtil;
 
@@ -14,13 +15,14 @@ public class CustomChart extends AreaChart<Number, Number> {
 	private NumberAxis xAxis;
 	private NumberAxis yAxis;
 	private int ratio = 20;
-	private int hiperperiod;
+	private long chartEndLine;
 
-	public CustomChart(int hiperperiod) {
-		super(new NumberAxis(0, hiperperiod, 5), new NumberAxis(0, 1.5, 5));
+	public CustomChart() {
+		super(new NumberAxis(0, Cache.get().getHiperperiod() < 1000 ? Cache.get().getHiperperiod() : 1000, 5),
+				new NumberAxis(0, 1.5, 5));
 		this.xAxis = (NumberAxis) getXAxis();
 		this.yAxis = (NumberAxis) getYAxis();
-		this.hiperperiod = hiperperiod;
+		this.chartEndLine = Cache.get().getHiperperiod() < 1000 ? Cache.get().getHiperperiod() : 1000;
 		configure();
 		configureXAxis();
 		configureYAxis();
@@ -29,7 +31,7 @@ public class CustomChart extends AreaChart<Number, Number> {
 	private void configure() {
 		setAnimated(false);
 		setCreateSymbols(false);
-		setMinWidth(hiperperiod * ratio);
+		setMinWidth(chartEndLine * ratio);
 		computeMaxHeight(40);
 		setMaxHeight(40);
 		maxHeight(60);
@@ -62,6 +64,8 @@ public class CustomChart extends AreaChart<Number, Number> {
 			series.getData().add(new XYChart.Data<>(timeUnit, heightUnit));
 			series.getData().add(new XYChart.Data<>(timeUnit + 1, heightUnit));
 			series.getData().add(new XYChart.Data<>(timeUnit + 1, -0.2));
+			if (timeUnit > chartEndLine)
+				break;
 		}
 		getData().add(series);
 		changeChartStyle(series);
@@ -81,7 +85,7 @@ public class CustomChart extends AreaChart<Number, Number> {
 
 	private XYChart.Series<Number, Number> createPeriodSeries(Process process) {
 		AreaChart.Series<Number, Number> series = new AreaChart.Series<>();
-		for (int i = process.getArrivalTime(); i <= hiperperiod; i += process.getPeriod()) {
+		for (int i = process.getArrivalTime(); i <= chartEndLine; i += process.getPeriod()) {
 			series.getData().add(new XYChart.Data<>(i, -0.2));
 			series.getData().add(new XYChart.Data<>(i, 1.5));
 			series.getData().add(new XYChart.Data<>(i + 0.01, 1.5));
@@ -97,6 +101,8 @@ public class CustomChart extends AreaChart<Number, Number> {
 			series.getData().add(new XYChart.Data<>(i, 1.2));
 			series.getData().add(new XYChart.Data<>(i + 0.01, 1.2));
 			series.getData().add(new XYChart.Data<>(i + 0.01, -0.2));
+			if (i > chartEndLine)
+				break;
 		}
 		return series;
 	}
@@ -108,6 +114,8 @@ public class CustomChart extends AreaChart<Number, Number> {
 			series.getData().add(new XYChart.Data<>(i, 1.2));
 			series.getData().add(new XYChart.Data<>(i + 0.01, 1.2));
 			series.getData().add(new XYChart.Data<>(i + 0.01, -0.2));
+			if (i > chartEndLine)
+				break;
 		}
 		return series;
 	}

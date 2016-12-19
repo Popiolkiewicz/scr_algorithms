@@ -14,7 +14,8 @@ import pl.scr.project.model.Process;
 public abstract class Calculator {
 
 	protected List<Process> dataSource;
-	protected Integer hiperperiod;
+	protected long hiperperiod;
+	protected double cpuUsage;
 	protected int currentTimeUnit;
 
 	public Calculator(List<Process> dataSource) {
@@ -25,10 +26,15 @@ public abstract class Calculator {
 			process.clearDeadlineExceededTimeUnits();
 			process.clearDeadlineOkTimeUnits();
 		});
-		calculateHiperperiod();
 	}
 
-	public void calculateHiperperiod() {
+	private void calculateProcessorUsage() {
+		for (Process process : dataSource)
+			cpuUsage += (double) process.getProcessingTime() / (double) process.getPeriod();
+		System.out.println("Processor usage: " + cpuUsage);
+	}
+
+	private void calculateHiperperiod() {
 		List<Integer> collect = dataSource.stream().map(process -> process.getPeriod()).collect(Collectors.toList());
 		Integer[] periodArray = collect.toArray(new Integer[collect.size()]);
 		hiperperiod = 0;
@@ -41,28 +47,38 @@ public abstract class Calculator {
 					break;
 				}
 			}
+			if (i >= Integer.MAX_VALUE) {
+				hiperperiod = Integer.MAX_VALUE;
+				break;
+			}
 			if (found) {
 				hiperperiod = i;
 				break;
 			}
 		}
+		System.out.println("Hiperperiod: " + hiperperiod);
 	}
 
-	public int getHiperperiod() {
-		if (hiperperiod == null)
-			throw new IllegalStateException("Hiperokres nie wyliczony");
+	public long getHiperperiod() {
 		return hiperperiod;
+	}
+
+	public double getCpuUsage() {
+		return cpuUsage;
 	}
 
 	public abstract Comparator<Process> getAlgorithmComparator();
 
 	public void calculate() {
+		calculateProcessorUsage();
+		calculateHiperperiod();
+
 		List<Process> awaiting = new ArrayList<>();
 		Set<Process> paused = new HashSet<>();
 		Set<Process> startedNewPeriod = new HashSet<>();
 		Process currentProcess = null;
 
-		for (currentTimeUnit = 0; currentTimeUnit <= hiperperiod; currentTimeUnit++) {
+		for (currentTimeUnit = 0; currentTimeUnit <= 1000; currentTimeUnit++) {
 			startedNewPeriod.clear();
 			awaiting.clear();
 			dataSource.forEach(process -> {

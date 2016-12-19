@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.geometry.Insets?>
+
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="pl.scr.project.controller.SettingsWindowController">
+	<children>
+		<HBox>
+			<children>
+				<VBox alignment="TOP_RIGHT" prefHeight="200" prefWidth="200"
+					spacing="13.0" HBox.hgrow="NEVER">
+					<children>
+						<Label text="Losuj ilość zadań. Od:" />
+						<Label text="Do:" />
+						<Label text="Losuj zużycie procesorów. Od:" />
+						<Label text="Do:" />
+						<Label text="Termin równy okresowi:" />
+					</children>
+					<padding>
+						<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+					</padding>
+				</VBox>
+				<VBox prefHeight="200.0" prefWidth="100" spacing="5.0">
+					<children>
+						<TextField fx:id="processesRangeFrom" maxWidth="37.0"
+							prefHeight="25.0" prefWidth="26.0" />
+						<TextField fx:id="processesRangeTo" maxWidth="37.0"
+							prefHeight="25.0" prefWidth="26.0" />
+						<TextField fx:id="processorUsageFrom" maxWidth="37.0"
+							prefHeight="25.0" prefWidth="26.0" />
+						<TextField fx:id="processorUsageTo" maxWidth="37.0"
+							prefHeight="25.0" prefWidth="26.0" />
+						<CheckBox fx:id="deadlineEqualsPeriod" />
+					</children>
+					<padding>
+						<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+					</padding>
+				</VBox>
+			</children>
+		</HBox>
+	</children>
+</Pane>
