@@ -130,11 +130,21 @@ public class ProcessingPaneController implements Initializable {
 		calculation.setOnSucceeded(e -> {
 			Cache.get().hiperperiod().set(finalCalc.getHiperperiod());
 			Cache.get().processorUsage().set(finalCalc.getCpuUsage());
+			// List<ImageView> ims = new ArrayList<>();
 			for (Process process : dataSource) {
 				CustomChart customChart = new CustomChart();
 				chartBox.getChildren().add(customChart);
 				customChart.createData(process);
+				// SnapshotParameters sp = new SnapshotParameters();
+				// WritableImage snapshot = customChart.snapshot(sp,
+				// (WritableImage) null);
+				// chartBox.getChildren().add(new ImageView(snapshot));
+				// ims.add(new ImageView(snapshot));
+				// chartBox.getChildren().add(new ImageView(snapshot));
 			}
+			// chartBox.getChildren().add(new ImageView(snapshot));
+			// chartBox.getChildren().clear();
+			// chartBox.getChildren().addAll(ims);
 			LoaderUtil.hide();
 		});
 		new Thread(calculation).start();
